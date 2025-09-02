@@ -1,0 +1,28 @@
+[package]
+name = "gpsd-json-rs"
+version = "0.1.0"
+edition = "2024"
+keywords = ["gpsd", "parser", "json", "protocol"]
+categories = ["API bindings", "Data structures"]
+authors = ["Ryohei Kato<r-kato@musen.co.jp>"]
+license = "BSD-2-Clause"
+
+readme = "README.md"
+description = "A Rust library for parsing GPSD JSON protocol messages without dependencies on libgps."
+
+[features]
+default = ["proto-v3"]
+
+proto-v3 = []
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+serde_repr = { version = "0.1" }
+serde_with = { version = "3" }
+
+chrono = { version = "0.4", features = ["serde"] }
+bitflags = { version = "2" }
+
+[dev-dependencies]
+clap = { version = "4", features = ["derive"] }
