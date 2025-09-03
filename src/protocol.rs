@@ -41,9 +41,10 @@ pub trait GpsdJsonDecode: std::io::BufRead {
     /// ```no_run
     /// # use std::io::BufReader;
     /// # use gpsd_json_rs::protocol::GpsdJsonDecode;
+    /// # use gpsd_json_rs::protocol::v3::ResponseMessage;
     /// # fn example(reader: &mut BufReader<std::net::TcpStream>) {
     /// let mut buf = String::new();
-    /// if let Ok(Some(response)) = reader.read_response(&mut buf) {
+    /// if let Ok(Some(response)) = reader.read_response::<ResponseMessage>(&mut buf) {
     ///     // Process the response
     /// }
     /// # }
