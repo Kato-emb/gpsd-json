@@ -107,7 +107,7 @@ impl<'de> Deserialize<'de> for SatQuality {
             2 => Ok(SatQuality::Acquired),
             3 => Ok(SatQuality::Unusable),
             4 => Ok(SatQuality::CodeLocked),
-            5 | 6 | 7 => Ok(SatQuality::CodeCarrierLocked),
+            5..=7 => Ok(SatQuality::CodeCarrierLocked),
             _ => Err(serde::de::Error::custom(format!(
                 "invalid Satellite QualityInd value: {v}"
             ))),
@@ -232,8 +232,7 @@ impl<'de> Deserialize<'de> for Parity {
             "O" => Ok(Parity::Odd),
             "E" => Ok(Parity::Even),
             _ => Err(serde::de::Error::custom(format!(
-                "invalid Parity value: {}",
-                v
+                "invalid Parity value: {v}",
             ))),
         }
     }

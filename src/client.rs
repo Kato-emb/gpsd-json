@@ -382,9 +382,11 @@ impl StreamOptions<Json> {
     /// Returns a configuration for receiving structured GPS data
     /// as JSON messages.
     pub fn json() -> StreamOptions<Json> {
-        let mut opts = v3::types::Watch::default();
-        opts.enable = Some(true);
-        opts.json = Some(true);
+        let opts = v3::types::Watch {
+            enable: Some(true),
+            json: Some(true),
+            ..Default::default()
+        };
 
         StreamOptions::<Json> {
             opts,
@@ -417,9 +419,11 @@ impl StreamOptions<Nmea> {
     /// Returns a configuration for receiving raw NMEA 0183 sentences
     /// from the GPS receiver.
     pub fn nmea() -> StreamOptions<Nmea> {
-        let mut opts = v3::types::Watch::default();
-        opts.enable = Some(true);
-        opts.nmea = Some(true);
+        let opts = v3::types::Watch {
+            enable: Some(true),
+            nmea: Some(true),
+            ..Default::default()
+        };
 
         StreamOptions::<Nmea> {
             opts,
@@ -443,9 +447,11 @@ impl StreamOptions<Raw> {
     /// Returns a configuration for receiving raw binary data
     /// from the GPS receiver.
     pub fn raw() -> StreamOptions<Raw> {
-        let mut opts = v3::types::Watch::default();
-        opts.enable = Some(true);
-        opts.raw = Some(1);
+        let opts = v3::types::Watch {
+            enable: Some(true),
+            raw: Some(1),
+            ..Default::default()
+        };
 
         StreamOptions::<Raw> {
             opts,

@@ -15,24 +15,24 @@ pub enum Message {
     ///
     /// Command: `?DEVICES;`
     Devices,
-    
+
     /// Control data streaming from GPSD
     ///
     /// - `None`: Query current watch settings (`?WATCH;`)
     /// - `Some(watch)`: Set watch parameters (`?WATCH={...};`)
     Watch(Option<Watch>),
-    
+
     /// Control or query a specific GPS device
     ///
     /// - `None`: Query current device (`?DEVICE;`)
     /// - `Some(device)`: Configure device (`?DEVICE={...};`)
     Device(Option<Device>),
-    
+
     /// Poll for current GPS data from all devices
     ///
     /// Command: `?POLL;`
     Poll,
-    
+
     /// Request GPSD version information
     ///
     /// Command: `?VERSION;`

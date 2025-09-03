@@ -519,13 +519,14 @@ impl<'de> Deserialize<'de> for Raw {
     }
 }
 
-/// - [libgps_json_unpack](https://gitlab.com/gpsd/gpsd/-/blob/master/libgps/libgps_json.c#L792)
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-#[serde(tag = "class", rename_all = "UPPERCASE")]
 /// GPSD response message types
 ///
 /// This enum represents all possible response messages from GPSD.
 /// Each variant corresponds to a specific "class" value in the JSON response.
+/// - [libgps_json_unpack](https://gitlab.com/gpsd/gpsd/-/blob/master/libgps/libgps_json.c#L792)
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
+#[serde(tag = "class", rename_all = "UPPERCASE")]
 pub enum Message {
     /// Time-Position-Velocity report
     Tpv(Tpv),

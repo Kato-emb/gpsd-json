@@ -16,7 +16,7 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let mut client = GpsdClient::connect_socket(&format!("{}:{}", args.addr, args.port)).unwrap();
+    let mut client = GpsdClient::connect_socket(format!("{}:{}", args.addr, args.port)).unwrap();
 
     let version = client.version().unwrap();
     println!("GPSD Version: {}", version.release);

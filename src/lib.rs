@@ -22,10 +22,10 @@
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // Connect to GPSD server
 //! let client = GpsdClient::connect_socket("127.0.0.1:2947")?;
-//! 
+//!
 //! // Start streaming GPS data in JSON format
 //! let mut stream = client.stream(StreamOptions::json())?;
-//! 
+//!
 //! // Process incoming GPS data
 //! while let Some(Ok(msg)) = stream.next() {
 //!     println!("Received: {:?}", msg);

@@ -14,19 +14,19 @@ pub enum GpsdJsonError {
     /// This typically happens when the connection to GPSD is lost,
     /// the server is unreachable, or there are network-related issues.
     IoError(std::io::Error),
-    
+
     /// JSON serialization/deserialization error
     ///
     /// Occurs when GPSD sends malformed JSON or when the response
     /// doesn't match the expected message structure.
     SerdeError(serde_json::Error),
-    
+
     /// GPSD protocol version is not supported
     ///
     /// The tuple contains (major, minor) version numbers.
     /// This library requires protocol version 3.x compatibility.
     UnsupportedProtocolVersion((i32, i32)),
-    
+
     /// Protocol-level error
     ///
     /// Indicates an error in the GPSD protocol communication,
@@ -34,16 +34,15 @@ pub enum GpsdJsonError {
     ProtocolError(&'static str),
 }
 
-
 impl core::fmt::Display for GpsdJsonError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            GpsdJsonError::IoError(err) => write!(f, "IoError: {}", err),
-            GpsdJsonError::SerdeError(err) => write!(f, "SerdeError: {}", err),
+            GpsdJsonError::IoError(err) => write!(f, "IoError: {err}"),
+            GpsdJsonError::SerdeError(err) => write!(f, "SerdeError: {err}"),
             GpsdJsonError::UnsupportedProtocolVersion((major, minor)) => {
-                write!(f, "UnsupportedProtocolVersion: {}.{}", major, minor)
+                write!(f, "UnsupportedProtocolVersion: {major}.{minor}")
             }
-            GpsdJsonError::ProtocolError(msg) => write!(f, "ProtocolError: {}", msg),
+            GpsdJsonError::ProtocolError(msg) => write!(f, "ProtocolError: {msg}"),
         }
     }
 }
