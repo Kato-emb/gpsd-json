@@ -1,12 +1,10 @@
-use std::{
-    io::BufReader,
-    net::{IpAddr, TcpStream},
-};
+use std::net::IpAddr;
 
 use clap::Parser;
-use gpsd_json_rs::protocol::{
-    GpsdJsonDecode, GpsdJsonEncode,
-    v3::{RequestMessage, ResponseMessage, types::Watch},
+
+use gpsd_json_rs::{
+    client::{GpsdClient, StreamOptions},
+    protocol::v3::ResponseMessage,
 };
 
 #[derive(Debug, Parser)]
@@ -21,47 +19,44 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let mut stream = TcpStream::connect(format!("{}:{}", args.addr, args.port)).unwrap();
-    let mut reader = BufReader::new(stream.try_clone().unwrap());
-    let mut buf = String::new();
+    let mut client = GpsdClient::connect_socket(&format!("{}:{}", args.addr, args.port)).unwrap();
 
-    if let Ok(Some(res)) = reader.read_response(&mut buf) {
-        if let ResponseMessage::Version(version) = res {
-            println!(
-                "Connected to GPSD\nversion: {}\nproto_version: {}.{}",
-                version.release, version.proto_major, version.proto_minor
-            );
-        }
+    let version = client.version().unwrap();
+    println!("GPSD Version: {}", version.release);
+
+    let devices = client.devices().unwrap();
+    for device in devices.devices {
+        println!(
+            "Device:\n- path: {:?}\n- activated: {:?}",
+            device.path.unwrap(),
+            device.activated.unwrap()
+        );
     }
 
-    stream
-        .write_request(&RequestMessage::Watch(Some(Watch {
-            device: None,
-            enable: Some(true),
-            json: Some(true),
-            nmea: Some(false),
-            pps: Some(true),
-            raw: None,
-            scaled: Some(true),
-            split24: Some(true),
-            timing: Some(true),
-            remote: None,
-        })))
-        .unwrap();
+    let opts = StreamOptions::json().pps(true).timing(true);
+    let mut stream = client.stream(opts).unwrap();
 
-    // stream.write_request(&RequestMessage::Poll).unwrap();
-
-    loop {
-        match reader.read_response(&mut buf) {
-            Ok(Some(res)) => {
-                println!("{:?}", res);
+    while let Some(Ok(msg)) = stream.next() {
+        match msg {
+            ResponseMessage::Tpv(tpv) => {
+                println!(
+                    "Received TPV: lat {}, lon {}, alt {}",
+                    tpv.lat.unwrap_or_default(),
+                    tpv.lon.unwrap_or_default(),
+                    tpv.alt.unwrap_or_default()
+                );
             }
-            Ok(None) => {
-                println!("Connection closed by server");
-                break;
+            ResponseMessage::Sky(sky) => {
+                println!("Received SKY: satellites {}", sky.satellites.len());
             }
-            Err(_) => {
-                println!("{}", buf);
+            ResponseMessage::Toff(toff) => {
+                println!(
+                    "Received TOFF: diff {}",
+                    toff.clock.unwrap() - toff.real.unwrap()
+                );
+            }
+            _ => {
+                println!("Received other message: {:?}", msg);
             }
         }
     }
