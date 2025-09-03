@@ -137,6 +137,7 @@ pub struct Tpv {
     pub tow: Option<f64>,
     /// GPS week rollover count
     pub rollovers: Option<i32>,
+    #[cfg(feature = "extra-fields")]
     /// Additional fields not explicitly defined
     #[serde(flatten)]
     extra: std::collections::HashMap<String, serde_json::Value>,
@@ -163,6 +164,7 @@ pub struct Sky {
     pub u_sat: Option<i32>,
     /// List of visible satellites with their properties
     pub satellites: Vec<Satellite>,
+    #[cfg(feature = "extra-fields")]
     /// Additional fields not explicitly defined
     #[serde(flatten)]
     extra: std::collections::HashMap<String, serde_json::Value>,
