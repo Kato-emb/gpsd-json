@@ -1,5 +1,6 @@
 use crate::error::GpsdJsonError;
 
+pub mod client;
 pub mod error;
 pub mod protocol;
 
