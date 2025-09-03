@@ -84,7 +84,7 @@ pub struct Sky {
     pub n_sat: Option<i32>,
     #[serde(rename = "uSat")]
     pub u_sat: Option<i32>,
-    pub satellites: Option<Vec<Satellite>>,
+    pub satellites: Vec<Satellite>,
     #[serde(flatten)]
     extra: std::collections::HashMap<String, serde_json::Value>,
 }
@@ -296,9 +296,9 @@ impl<'de> Deserialize<'de> for DeviceList {
 pub struct Poll {
     active: Option<i32>,
     time: Option<DateTime<Utc>>,
-    tpv: Option<Vec<Tpv>>,
-    gst: Option<Vec<Gst>>,
-    sky: Option<Vec<Sky>>,
+    tpv: Vec<Tpv>,
+    gst: Vec<Gst>,
+    sky: Vec<Sky>,
 }
 
 /// # Error Notification
@@ -324,7 +324,7 @@ pub struct Rtcm3 {}
 pub struct Raw {
     pub device: Option<String>,
     pub time: Option<DateTime<Utc>>,
-    pub rawdata: Option<Vec<Measurement>>,
+    pub rawdata: Vec<Measurement>,
 }
 
 impl<'de> Deserialize<'de> for Raw {
@@ -337,7 +337,7 @@ impl<'de> Deserialize<'de> for Raw {
             pub device: Option<String>,
             pub time: Option<f64>,
             pub nsec: Option<f64>,
-            pub rawdata: Option<Vec<Measurement>>,
+            pub rawdata: Vec<Measurement>,
         }
 
         let raw = RawRaw::deserialize(deserializer)?;
