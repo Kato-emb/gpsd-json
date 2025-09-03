@@ -27,7 +27,7 @@ pub trait GpsdJsonRequest {
 }
 
 pub trait GpsdJsonEncode: std::io::Write {
-    fn write_request(&mut self, request: &dyn GpsdJsonRequest) -> Result<()> {
+    fn write_request(&mut self, request: &impl GpsdJsonRequest) -> Result<()> {
         let cmd = request.to_command();
         self.write_all(cmd.as_bytes())
             .map_err(GpsdJsonError::IoError)
