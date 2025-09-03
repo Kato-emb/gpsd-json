@@ -14,7 +14,7 @@ pub struct Tpv {
     pub alt_msl: Option<f64>,
     pub ant: Option<AntennaStatus>,
     #[serde(flatten)]
-    pub base: Option<Baseline>,
+    pub base: Baseline,
     pub climb: Option<f64>,
     pub datum: Option<String>,
     pub device: Option<String>,
@@ -24,7 +24,7 @@ pub struct Tpv {
     #[serde(rename = "dgpsSta")]
     pub dgps_sta: Option<i32>,
     #[serde(flatten)]
-    pub ecef: Option<Ecef>,
+    pub ecef: Ecef,
     pub epc: Option<f64>,
     pub epd: Option<f64>,
     pub eph: Option<f64>,
