@@ -293,7 +293,13 @@ impl<'de> Deserialize<'de> for DeviceList {
 
 /// # Poll Snapshot
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct Poll {}
+pub struct Poll {
+    active: Option<i32>,
+    time: Option<DateTime<Utc>>,
+    tpv: Option<Vec<Tpv>>,
+    gst: Option<Vec<Gst>>,
+    sky: Option<Vec<Sky>>,
+}
 
 /// # Error Notification
 #[derive(Debug, Clone, PartialEq, Deserialize)]
@@ -377,13 +383,7 @@ pub enum Message {
     Pps(Pps),
     Osc(Oscillator),
     Raw(Raw),
-    Poll {
-        active: Option<i32>,
-        time: Option<DateTime<Utc>>,
-        tpv: Option<Vec<Tpv>>,
-        gst: Option<Vec<Gst>>,
-        sky: Option<Vec<Sky>>,
-    },
+    Poll(Poll),
     #[serde(untagged)]
     Other(String),
 }
