@@ -338,6 +338,23 @@ pub struct Watch {
     pub remote: Option<String>,
 }
 
+impl Default for Watch {
+    fn default() -> Self {
+        Watch {
+            device: None,
+            enable: Some(false),
+            json: Some(false),
+            nmea: Some(false),
+            pps: Some(false),
+            raw: Some(0),
+            scaled: Some(false),
+            split24: Some(false),
+            timing: Some(false),
+            remote: None,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
