@@ -202,21 +202,95 @@ pub struct Gst {
     pub vn: Option<f64>,
     /// Up velocity error in meters/second (1-sigma)
     pub vu: Option<f64>,
+    #[cfg(feature = "extra-fields")]
+    /// Additional fields not explicitly defined
+    #[serde(flatten)]
+    extra: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// Attitude/orientation data
 ///
 /// Reports the orientation of the device in 3D space.
 /// Currently a placeholder for future implementation.
+/// Reference: [json_att_read](https://gitlab.com/gpsd/gpsd/-/blob/master/libgps/libgps_json.c?ref_type=heads#L404)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct Attitude {}
+pub struct Attitude {
+    pub device: Option<String>,
+    pub acc_len: Option<f64>,
+    pub acc_x: Option<f64>,
+    pub acc_y: Option<f64>,
+    pub acc_z: Option<f64>,
+    #[serde(flatten)]
+    pub base: Baseline,
+    pub depth: Option<f64>,
+    pub dip: Option<f64>,
+    // pub gyro_temp: Option<f64>,
+    pub gyro_x: Option<f64>,
+    pub gyro_y: Option<f64>,
+    pub gyro_z: Option<f64>,
+    pub heading: Option<f64>,
+    pub mag_len: Option<f64>,
+    pub mag_x: Option<f64>,
+    pub mag_y: Option<f64>,
+    pub mag_z: Option<f64>,
+    pub mheading: Option<f64>,
+    pub msg: Option<String>,
+    pub pitch_st: Option<char>,
+    pub pitch: Option<f64>,
+    pub roll_st: Option<char>,
+    pub roll: Option<f64>,
+    pub temp: Option<f64>,
+    pub time: Option<DateTime<Utc>>,
+    #[serde(rename = "timeTag")]
+    pub time_tag: Option<String>,
+    pub yaw_st: Option<char>,
+    pub yaw: Option<f64>,
+    #[cfg(feature = "extra-fields")]
+    /// Additional fields not explicitly defined
+    #[serde(flatten)]
+    extra: std::collections::HashMap<String, serde_json::Value>,
+}
 
 /// Inertial Measurement Unit data
 ///
 /// Reports accelerometer and gyroscope readings.
 /// Currently a placeholder for future implementation.
+/// Reference: [json_imu_read](https://gitlab.com/gpsd/gpsd/-/blob/master/libgps/libgps_json.c?ref_type=heads#L487)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct Imu {}
+pub struct Imu {
+    pub device: Option<String>,
+    pub acc_len: Option<f64>,
+    pub acc_x: Option<f64>,
+    pub acc_y: Option<f64>,
+    pub acc_z: Option<f64>,
+    pub depth: Option<f64>,
+    pub dip: Option<f64>,
+    // pub gyro_temp: Option<f64>,
+    pub gyro_x: Option<f64>,
+    pub gyro_y: Option<f64>,
+    pub gyro_z: Option<f64>,
+    pub heading: Option<f64>,
+    pub mag_len: Option<f64>,
+    pub mag_x: Option<f64>,
+    pub mag_y: Option<f64>,
+    pub mag_z: Option<f64>,
+    pub mheading: Option<f64>,
+    pub msg: Option<String>,
+    pub pitch_st: Option<char>,
+    pub pitch: Option<f64>,
+    pub roll_st: Option<char>,
+    pub roll: Option<f64>,
+    pub temp: Option<f64>,
+    pub time: Option<DateTime<Utc>>,
+    #[serde(rename = "timeTag")]
+    pub time_tag: Option<String>,
+    pub yaw_st: Option<char>,
+    pub yaw: Option<f64>,
+    #[cfg(feature = "extra-fields")]
+    /// Additional fields not explicitly defined
+    #[serde(flatten)]
+    extra: std::collections::HashMap<String, serde_json::Value>,
+}
 
 /// Time Offset report
 ///
