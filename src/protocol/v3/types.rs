@@ -238,6 +238,45 @@ impl<'de> Deserialize<'de> for Parity {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum StatusCode {
+    /// magnetometer calibration alarm
+    Calibration,
+    /// low alarm
+    Low,
+    /// low warning
+    LowWarning,
+    /// normal
+    Normal,
+    /// high warning
+    HighWarning,
+    /// high alarm
+    High,
+    /// magnetometer voltage level alarm
+    VoltageLevel,
+}
+
+impl<'de> Deserialize<'de> for StatusCode {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let v = String::deserialize(deserializer)?;
+        match v.as_str() {
+            "C" => Ok(StatusCode::Calibration),
+            "L" => Ok(StatusCode::Low),
+            "M" => Ok(StatusCode::LowWarning),
+            "N" => Ok(StatusCode::Normal),
+            "O" => Ok(StatusCode::HighWarning),
+            "P" => Ok(StatusCode::High),
+            "V" => Ok(StatusCode::VoltageLevel),
+            _ => Err(serde::de::Error::custom(format!(
+                "invalid StatusCode value: {v}",
+            ))),
+        }
+    }
+}
+
 /// Earth-Centered, Earth-Fixed (ECEF) coordinates
 ///
 /// Represents position and velocity in the ECEF coordinate system,
