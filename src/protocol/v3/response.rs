@@ -92,7 +92,7 @@ pub struct Tpv {
     pub mode: FixMode,
     /// NED velocity components (flattened)
     #[serde(flatten)]
-    pub ned: Option<Ned>,
+    pub ned: Ned,
     /// Temperature in degrees Celsius
     pub temp: Option<f64>,
     /// GPS time of fix
@@ -153,7 +153,7 @@ pub struct Sky {
     pub device: Option<String>,
     /// Dilution of precision values (flattened)
     #[serde(flatten)]
-    pub dop: Option<Dop>,
+    pub dop: Dop,
     /// GPS time of this sky view
     pub time: Option<DateTime<Utc>>,
     /// Number of satellites visible
