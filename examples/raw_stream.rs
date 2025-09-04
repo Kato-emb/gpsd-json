@@ -2,7 +2,7 @@ use std::net::IpAddr;
 
 use clap::Parser;
 
-use gpsd_json_rs::client::{GpsdClient, StreamOptions};
+use gpsd_json::client::{GpsdClient, StreamOptions};
 
 #[derive(Debug, Parser)]
 #[command(version, about, long_about = None)]

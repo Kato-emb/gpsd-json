@@ -40,8 +40,8 @@ pub trait GpsdJsonDecode: std::io::BufRead {
     /// # Example
     /// ```no_run
     /// # use std::io::BufReader;
-    /// # use gpsd_json_rs::protocol::GpsdJsonDecode;
-    /// # use gpsd_json_rs::protocol::v3::ResponseMessage;
+    /// # use gpsd_json::protocol::GpsdJsonDecode;
+    /// # use gpsd_json::protocol::v3::ResponseMessage;
     /// # fn example(reader: &mut BufReader<std::net::TcpStream>) {
     /// let mut buf = String::new();
     /// if let Ok(Some(response)) = reader.read_response::<ResponseMessage>(&mut buf) {
@@ -80,7 +80,7 @@ pub trait GpsdJsonRequest {
     /// # Example
     /// ```
     /// # struct WatchRequest;
-    /// # impl gpsd_json_rs::protocol::GpsdJsonRequest for WatchRequest {
+    /// # impl gpsd_json::protocol::GpsdJsonRequest for WatchRequest {
     /// fn to_command(&self) -> String {
     ///     "?WATCH={\"enable\":true};".to_string()
     /// }
@@ -105,8 +105,8 @@ pub trait GpsdJsonEncode: std::io::Write {
     ///
     /// # Example
     /// ```no_run
-    /// # use gpsd_json_rs::protocol::GpsdJsonEncode;
-    /// # fn example(writer: &mut std::net::TcpStream, request: &impl gpsd_json_rs::protocol::GpsdJsonRequest) {
+    /// # use gpsd_json::protocol::GpsdJsonEncode;
+    /// # fn example(writer: &mut std::net::TcpStream, request: &impl gpsd_json::protocol::GpsdJsonRequest) {
     /// writer.write_request(request).expect("Failed to send request");
     /// # }
     /// ```

@@ -7,7 +7,7 @@
 //! # Example
 //!
 //! ```no_run
-//! use gpsd_json_rs::client::{GpsdClient, StreamOptions};
+//! use gpsd_json::client::{GpsdClient, StreamOptions};
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // Connect to GPSD
@@ -158,7 +158,7 @@ impl<Pr: GpsdJsonProtocol> GpsdBaseClient<TcpStream, Pr> {
     ///
     /// # Example
     /// ```no_run
-    /// # use gpsd_json_rs::client::GpsdClient;
+    /// # use gpsd_json::client::GpsdClient;
     /// let client = GpsdClient::connect_socket("127.0.0.1:2947").unwrap();
     /// ```
     pub fn connect_socket<A: ToSocketAddrs>(addr: A) -> Result<Self> {
@@ -269,7 +269,7 @@ where
     ///
     /// # Example
     /// ```no_run
-    /// # use gpsd_json_rs::client::{GpsdClient, StreamOptions};
+    /// # use gpsd_json::client::{GpsdClient, StreamOptions};
     /// # let client = GpsdClient::connect_socket("127.0.0.1:2947").unwrap();
     /// let stream = client.stream(StreamOptions::json()).unwrap();
     /// ```

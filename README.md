@@ -1,8 +1,8 @@
-# gpsd-json-rs
+# gpsd-json
 
-[![Crates.io](https://img.shields.io/crates/v/gpsd-json-rs.svg)](https://crates.io/crates/gpsd-json-rs)
-[![Documentation](https://docs.rs/gpsd-json-rs/badge.svg)](https://docs.rs/gpsd-json-rs)
-[![License](https://img.shields.io/crates/l/gpsd-json-rs.svg)](LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/gpsd-json.svg)](https://crates.io/crates/gpsd-json)
+[![Documentation](https://docs.rs/gpsd-json/badge.svg)](https://docs.rs/gpsd-json)
+[![License](https://img.shields.io/crates/l/gpsd-json.svg)](LICENSE)
 
 A Rust library for parsing GPSD JSON protocol messages without dependencies on libgps.
 
@@ -12,13 +12,13 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-gpsd-json-rs = "0.1.0"
+gpsd-json = "0.1.0"
 ```
 
 ## Quick Start
 
 ```rust
-use gpsd_json_rs::client::{GpsdClient, StreamOptions};
+use gpsd_json::client::{GpsdClient, StreamOptions};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Connect to GPSD server
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### JSON Stream
 
 ```rust
-use gpsd_json_rs::{
+use gpsd_json::{
     client::{GpsdClient, StreamOptions},
     protocol::v3::ResponseMessage,
 };
@@ -86,7 +86,7 @@ fn main() {
 ### Raw Data Stream
 
 ```rust
-use gpsd_json_rs::client::{GpsdClient, StreamOptions};
+use gpsd_json::client::{GpsdClient, StreamOptions};
 
 fn main() {
     let mut client = GpsdClient::connect_socket("127.0.0.1:2947").unwrap();
@@ -112,7 +112,7 @@ See the [examples](examples/) directory for more usage examples:
 
 ## Documentation
 
-For detailed API documentation, please visit [docs.rs/gpsd-json-rs](https://docs.rs/gpsd-json-rs).
+For detailed API documentation, please visit [docs.rs/gpsd-json](https://docs.rs/gpsd-json).
 
 ## Requirements
 

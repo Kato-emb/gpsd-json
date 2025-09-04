@@ -1,4 +1,4 @@
-//! # gpsd-json-rs
+//! # gpsd-json
 //!
 //! A Rust library for interfacing with GPSD (GPS Service Daemon) using its JSON protocol.
 //!
@@ -17,7 +17,7 @@
 //! ## Example
 //!
 //! ```no_run
-//! use gpsd_json_rs::client::{GpsdClient, StreamOptions};
+//! use gpsd_json::client::{GpsdClient, StreamOptions};
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // Connect to GPSD server

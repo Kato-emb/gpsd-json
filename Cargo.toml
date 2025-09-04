@@ -1,5 +1,5 @@
 [package]
-name = "gpsd-json-rs"
+name = "gpsd-json"
 version = "0.1.0"
 edition = "2024"
 keywords = ["gpsd", "parser", "json", "protocol"]
