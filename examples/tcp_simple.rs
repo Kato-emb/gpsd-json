@@ -43,7 +43,7 @@ fn main() {
                     "Received TPV: lat {}, lon {}, alt {}",
                     tpv.lat.unwrap_or_default(),
                     tpv.lon.unwrap_or_default(),
-                    tpv.alt.unwrap_or_default()
+                    tpv.alt_hae.unwrap_or_default()
                 );
             }
             ResponseMessage::Sky(sky) => {
