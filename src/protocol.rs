@@ -21,6 +21,41 @@ pub mod v3;
 /// which ensures they can be properly deserialized from JSON.
 pub trait GpsdJsonResponse: serde::de::DeserializeOwned {}
 
+pub trait GpsdJsonDecodeAsync: futures_util::io::AsyncBufReadExt + Unpin {
+    fn read_response<Response>(
+        &mut self,
+        buf: &mut String,
+    ) -> impl std::future::Future<Output = Result<Option<Response>>>
+    where
+        Response: GpsdJsonResponse,
+    {
+        async move {
+            let bytes_read = self.read_line(buf).await.map_err(GpsdJsonError::IoError)?;
+            if bytes_read == 0 {
+                return Ok(None); // EOF reached
+            }
+
+            match serde_json::from_str(buf) {
+                Ok(msg) => {
+                    buf.clear();
+                    Ok(Some(msg))
+                }
+                Err(e) if e.is_eof() => {
+                    // Incomplete JSON, continue reading
+                    Ok(None)
+                }
+                Err(e) => {
+                    eprintln!("Failed to parse JSON: {}", buf);
+                    buf.clear();
+                    Err(GpsdJsonError::SerdeError(e))
+                }
+            }
+        }
+    }
+}
+
+impl<R: futures_util::io::AsyncBufReadExt + Unpin + ?Sized> GpsdJsonDecodeAsync for R {}
+
 /// Extension trait for reading GPSD JSON responses from a buffered reader
 ///
 /// This trait provides functionality to read and parse GPSD JSON messages
@@ -43,24 +78,37 @@ pub trait GpsdJsonDecode: std::io::BufRead {
     /// # use gpsd_json::protocol::GpsdJsonDecode;
     /// # use gpsd_json::protocol::v3::ResponseMessage;
     /// # fn example(reader: &mut BufReader<std::net::TcpStream>) {
-    /// let mut buf = String::new();
+    /// let mut buf = Vec::new();
     /// if let Ok(Some(response)) = reader.read_response::<ResponseMessage>(&mut buf) {
     ///     // Process the response
     /// }
     /// # }
     /// ```
-    fn read_response<Res>(&mut self, buf: &mut String) -> Result<Option<Res>>
+    fn read_response<Response>(&mut self, buf: &mut Vec<u8>) -> Result<Option<Response>>
     where
-        Res: GpsdJsonResponse,
+        Response: GpsdJsonResponse,
     {
-        buf.clear();
-        let bytes_read = self.read_line(buf).map_err(GpsdJsonError::IoError)?;
+        let bytes_read = self
+            .read_until(b'\n', buf)
+            .map_err(GpsdJsonError::IoError)?;
         if bytes_read == 0 {
             return Ok(None); // EOF reached
         }
 
-        let response = serde_json::from_str(buf).map_err(GpsdJsonError::SerdeError)?;
-        Ok(Some(response))
+        match serde_json::from_slice(buf) {
+            Ok(msg) => {
+                buf.clear();
+                Ok(Some(msg))
+            }
+            Err(e) if e.is_eof() => {
+                // Incomplete JSON, continue reading
+                Ok(None)
+            }
+            Err(e) => {
+                buf.clear();
+                Err(GpsdJsonError::SerdeError(e))
+            }
+        }
     }
 }
 
@@ -88,6 +136,22 @@ pub trait GpsdJsonRequest {
     /// ```
     fn to_command(&self) -> String;
 }
+
+pub trait GpsdJsonEncodeAsync: futures_util::io::AsyncWriteExt + Unpin {
+    fn write_request(
+        &mut self,
+        request: &impl GpsdJsonRequest,
+    ) -> impl std::future::Future<Output = Result<()>> {
+        let cmd = request.to_command();
+        async move {
+            self.write_all(cmd.as_bytes())
+                .await
+                .map_err(GpsdJsonError::IoError)
+        }
+    }
+}
+
+impl<W: futures_util::io::AsyncWriteExt + Unpin + ?Sized> GpsdJsonEncodeAsync for W {}
 
 /// Extension trait for writing GPSD JSON requests to a writer
 ///

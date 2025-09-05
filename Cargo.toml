@@ -11,10 +11,12 @@ readme = "README.md"
 description = "A Rust library for parsing GPSD JSON protocol messages without dependencies on libgps."
 
 [features]
-default = ["proto-v3"]
+default = ["proto-v3", "tokio"]
 
 proto-v3 = []
 extra-fields = []
+
+tokio = ["dep:tokio", "tokio-util"]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -25,5 +27,20 @@ serde_with = { version = "3" }
 chrono = { version = "0.4", features = ["serde"] }
 bitflags = { version = "2" }
 
+futures = { version = "0.3" }
+futures-util = { version = "0.3", features = ["io"] }
+
+tokio = { version = "1", default-features = false, features = [
+    "net",
+], optional = true }
+tokio-util = { version = "0.7", default-features = false, features = [
+    "compat",
+], optional = true }
+
 [dev-dependencies]
 clap = { version = "4.5.47", features = ["derive"] }
+tokio = { version = "1", default-features = false, features = [
+    "net",
+    "rt-multi-thread",
+    "macros",
+] }
