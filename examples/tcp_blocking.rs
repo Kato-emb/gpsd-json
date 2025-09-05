@@ -1,10 +1,8 @@
 use std::net::IpAddr;
 
 use clap::Parser;
-
-use futures::StreamExt;
 use gpsd_json::{
-    client::{GpsdClient, StreamOptions},
+    client::{StreamOptions, blocking},
     protocol::v3::ResponseMessage,
 };
 
@@ -17,18 +15,15 @@ struct Args {
     port: u16,
 }
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let args = Args::parse();
 
-    let mut client = GpsdClient::connect(format!("{}:{}", args.addr, args.port))
-        .await
-        .unwrap();
+    let mut client = blocking::GpsdClient::connect(format!("{}:{}", args.addr, args.port)).unwrap();
 
-    let version = client.version().await.unwrap();
+    let version = client.version().unwrap();
     println!("GPSD Version: {}", version.release);
 
-    let devices = client.devices().await.unwrap();
+    let devices = client.devices().unwrap();
     for device in devices.devices {
         println!(
             "Device:\n- path: {:?}\n- activated: {:?}",
@@ -38,10 +33,10 @@ async fn main() {
     }
 
     let opts = StreamOptions::json().pps(true).timing(true);
-    let mut stream = client.stream(opts).await.unwrap();
+    let mut stream = client.stream(opts).unwrap();
 
     loop {
-        match stream.next().await {
+        match stream.next() {
             Some(Ok(msg)) => {
                 if let ResponseMessage::Tpv(tpv) = &msg {
                     if let (Some(lat), Some(lon)) = (tpv.lat, tpv.lon) {
