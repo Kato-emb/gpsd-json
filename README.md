@@ -155,7 +155,3 @@ This project is licensed under the BSD-2-Clause License, following GPSD's licens
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Author
-
-Ryohei Kato <r-kato@musen.co.jp>
