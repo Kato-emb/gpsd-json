@@ -38,10 +38,21 @@ fn main() {
     loop {
         match stream.next() {
             Some(Ok(msg)) => {
-                if let ResponseMessage::Tpv(tpv) = &msg {
-                    if let (Some(lat), Some(lon)) = (tpv.lat, tpv.lon) {
-                        println!("Current position: lat {}, lon {}", lat, lon);
+                match msg {
+                    ResponseMessage::Tpv(tpv) => {
+                        if let (Some(lat), Some(lon)) = (tpv.lat, tpv.lon) {
+                            println!("Current position: lat {lat:6.3}, lon {lon:6.3}");
+                        }
                     }
+                    ResponseMessage::Sky(sky) => {
+                        let used: Vec<_> = sky.satellites.iter().filter(|sat| sat.used).collect();
+                        println!(
+                            "Satellites in view: {}, used: {}",
+                            sky.satellites.len(),
+                            used.len()
+                        );
+                    }
+                    _ => { /* ignore other messages */ }
                 }
             }
             Some(Err(e)) => {
