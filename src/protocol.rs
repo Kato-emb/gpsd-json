@@ -114,6 +114,75 @@ pub trait GpsdJsonDecodeAsync: futures_io::AsyncBufRead {
             }
         }
     }
+
+    /// Polls for raw GPSD message data without deserialization
+    ///
+    /// This method reads raw bytes from the async stream until a complete
+    /// message is received (delimited by newline), but returns the raw bytes
+    /// instead of deserializing them. This is useful when you need to process
+    /// the raw JSON data or handle messages that don't fit standard types.
+    ///
+    /// # Arguments
+    /// * `self` - Pinned mutable reference to the async reader
+    /// * `cx` - The task context for waking
+    /// * `buf` - A reusable buffer for accumulating message data
+    ///
+    /// # Returns
+    /// * `Poll::Ready(Ok(Some(bytes)))` - Complete raw message including newline
+    /// * `Poll::Ready(Ok(None))` - End of stream reached
+    /// * `Poll::Ready(Err(_))` - I/O error occurred
+    /// * `Poll::Pending` - Not enough data available yet
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use std::pin::Pin;
+    /// # use std::task::{Context, Poll};
+    /// # use futures::AsyncBufReadExt;
+    /// # use gpsd_json::protocol::GpsdJsonDecodeAsync;
+    /// # async fn example(reader: &mut (impl AsyncBufReadExt + Unpin)) {
+    /// let mut buf = Vec::new();
+    /// let fut = futures::future::poll_fn(|cx| {
+    ///     Pin::new(&mut *reader).poll_raw(cx, &mut buf)
+    /// });
+    /// if let Ok(Some(raw_msg)) = fut.await {
+    ///     // Process raw JSON bytes
+    ///     let json_str = String::from_utf8_lossy(&raw_msg);
+    ///     println!("Raw message: {}", json_str);
+    /// }
+    /// # }
+    /// ```
+    fn poll_raw(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &mut Vec<u8>,
+    ) -> Poll<Result<Option<Vec<u8>>>> {
+        loop {
+            match self.as_mut().poll_fill_buf(cx) {
+                Poll::Ready(Ok(in_buf)) => {
+                    if in_buf.is_empty() {
+                        return Poll::Ready(Ok(None)); // EOF reached
+                    }
+
+                    if let Some(pos) = in_buf.iter().position(|&b| b == b'\n') {
+                        // Found a newline, we have a complete message
+                        buf.extend_from_slice(&in_buf[..=pos]);
+                        self.as_mut().consume(pos + 1); // Consume up to and including the newline
+
+                        let msg = buf.clone();
+                        buf.clear();
+                        return Poll::Ready(Ok(Some(msg)));
+                    } else {
+                        // No newline found, append all available data and continue
+                        buf.extend_from_slice(in_buf);
+                        let len = in_buf.len();
+                        self.as_mut().consume(len);
+                    }
+                }
+                Poll::Ready(Err(e)) => return Poll::Ready(Err(GpsdJsonError::IoError(e))),
+                Poll::Pending => return Poll::Pending,
+            }
+        }
+    }
 }
 
 impl<R: futures_io::AsyncBufRead + Unpin + ?Sized> GpsdJsonDecodeAsync for R {}
