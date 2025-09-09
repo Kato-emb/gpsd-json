@@ -1,3 +1,4 @@
+# Package metadata
 [package]
 name = "gpsd-json"
 version = "0.1.0"
@@ -10,29 +11,42 @@ license = "BSD-2-Clause"
 readme = "README.md"
 description = "A Rust library for parsing GPSD JSON protocol messages without dependencies on libgps."
 
+# Feature flags
+# - proto-v3: Enable GPSD protocol version 3 support
+# - extra-fields: Include additional optional fields in message structures
+# - tokio: Enable async support with tokio runtime
 [features]
 default = ["proto-v3", "tokio"]
 
+# GPSD protocol version 3 support
 proto-v3 = []
+# Include additional optional fields
 extra-fields = []
 
+# Async support with tokio
 tokio = ["dep:tokio", "tokio-util"]
 
+# Runtime dependencies
 [dependencies]
+# Serialization/deserialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 serde_repr = { version = "0.1" }
 serde_with = { version = "3" }
 
+# Date/time handling
 chrono = { version = "0.4", features = ["serde"] }
+# Bit flags for status fields
 bitflags = { version = "2" }
 
+# Async I/O support
 futures-io = { version = "0.3", default-features = false, features = ["std"] }
 futures-util = { version = "0.3", default-features = false, features = [
     "std",
     "io",
 ] }
 
+# Optional tokio runtime support
 tokio = { version = "1", default-features = false, features = [
     "net",
 ], optional = true }
@@ -40,9 +54,12 @@ tokio-util = { version = "0.7", default-features = false, features = [
     "compat",
 ], optional = true }
 
+# Development dependencies
 [dev-dependencies]
+# CLI argument parsing for examples
 clap = { version = "4.5.47", features = ["derive"] }
 
+# Async runtime for tests and examples
 futures = { version = "0.3" }
 tokio = { version = "1", default-features = false, features = [
     "net",
