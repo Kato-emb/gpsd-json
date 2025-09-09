@@ -235,15 +235,15 @@ pub struct Attitude {
     pub mag_z: Option<f64>,
     pub mheading: Option<f64>,
     pub msg: Option<String>,
-    pub pitch_st: Option<char>,
+    pub pitch_st: Option<StatusCode>,
     pub pitch: Option<f64>,
-    pub roll_st: Option<char>,
+    pub roll_st: Option<StatusCode>,
     pub roll: Option<f64>,
     pub temp: Option<f64>,
     pub time: Option<DateTime<Utc>>,
     #[serde(rename = "timeTag")]
     pub time_tag: Option<String>,
-    pub yaw_st: Option<char>,
+    pub yaw_st: Option<StatusCode>,
     pub yaw: Option<f64>,
     #[cfg(feature = "extra-fields")]
     /// Additional fields not explicitly defined
@@ -276,15 +276,15 @@ pub struct Imu {
     pub mag_z: Option<f64>,
     pub mheading: Option<f64>,
     pub msg: Option<String>,
-    pub pitch_st: Option<char>,
+    pub pitch_st: Option<StatusCode>,
     pub pitch: Option<f64>,
-    pub roll_st: Option<char>,
+    pub roll_st: Option<StatusCode>,
     pub roll: Option<f64>,
     pub temp: Option<f64>,
     pub time: Option<DateTime<Utc>>,
     #[serde(rename = "timeTag")]
     pub time_tag: Option<String>,
-    pub yaw_st: Option<char>,
+    pub yaw_st: Option<StatusCode>,
     pub yaw: Option<f64>,
     #[cfg(feature = "extra-fields")]
     /// Additional fields not explicitly defined

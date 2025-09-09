@@ -2,6 +2,7 @@ use std::net::IpAddr;
 
 use clap::Parser;
 
+use futures::StreamExt;
 use gpsd_json::client::{GpsdClient, StreamOptions};
 
 #[derive(Debug, Parser)]
@@ -13,28 +14,34 @@ struct Args {
     port: u16,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Args::parse();
 
-    let mut client = GpsdClient::connect_socket(format!("{}:{}", args.addr, args.port)).unwrap();
+    let mut client = GpsdClient::connect(format!("{}:{}", args.addr, args.port))
+        .await
+        .unwrap();
 
-    let version = client.version().unwrap();
+    let version = client.version().await.unwrap();
     println!("GPSD Version: {}", version.release);
 
-    let devices = client.devices().unwrap();
-    for device in devices.devices {
-        println!(
-            "Device:\n- path: {:?}\n- activated: {:?}\n- Seen: {:?}",
-            device.path.unwrap(),
-            device.activated.unwrap(),
-            device.flags.unwrap()
-        );
-    }
-
     let opts = StreamOptions::raw();
-    let mut stream = client.stream(opts).unwrap();
+    let mut stream = client.stream(opts).await.unwrap();
 
-    while let Some(Ok(msg)) = stream.next() {
-        println!("{msg}");
+    loop {
+        match stream.next().await {
+            Some(Ok(msg)) => {
+                let msg = String::from_utf8_lossy(&msg).to_string();
+                println!("{}", msg.trim_end());
+            }
+            Some(Err(e)) => {
+                eprintln!("Error receiving message: {e}");
+                return;
+            }
+            None => {
+                eprintln!("Stream ended unexpectedly");
+                return;
+            }
+        }
     }
 }

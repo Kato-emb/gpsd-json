@@ -194,9 +194,10 @@ impl<'de> Deserialize<'de> for PropertyFlags {
     }
 }
 
-/// Serial port parity setting
+/// Serial port parity configuration
 ///
-/// Defines the parity bit configuration for serial communication.
+/// Defines the parity bit setting for serial communication with GPS devices.
+/// Used when configuring serial port parameters for GPS receivers.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Parity {
     /// No parity bit
@@ -233,6 +234,49 @@ impl<'de> Deserialize<'de> for Parity {
             "E" => Ok(Parity::Even),
             _ => Err(serde::de::Error::custom(format!(
                 "invalid Parity value: {v}",
+            ))),
+        }
+    }
+}
+
+/// Status code for various sensor readings
+///
+/// Represents the status or alarm level for sensor readings,
+/// particularly used for magnetometer and other environmental sensors.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum StatusCode {
+    /// magnetometer calibration alarm
+    Calibration,
+    /// low alarm
+    Low,
+    /// low warning
+    LowWarning,
+    /// normal
+    Normal,
+    /// high warning
+    HighWarning,
+    /// high alarm
+    High,
+    /// magnetometer voltage level alarm
+    VoltageLevel,
+}
+
+impl<'de> Deserialize<'de> for StatusCode {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let v = String::deserialize(deserializer)?;
+        match v.as_str() {
+            "C" => Ok(StatusCode::Calibration),
+            "L" => Ok(StatusCode::Low),
+            "M" => Ok(StatusCode::LowWarning),
+            "N" => Ok(StatusCode::Normal),
+            "O" => Ok(StatusCode::HighWarning),
+            "P" => Ok(StatusCode::High),
+            "V" => Ok(StatusCode::VoltageLevel),
+            _ => Err(serde::de::Error::custom(format!(
+                "invalid StatusCode value: {v}",
             ))),
         }
     }
