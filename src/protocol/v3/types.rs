@@ -194,9 +194,10 @@ impl<'de> Deserialize<'de> for PropertyFlags {
     }
 }
 
-/// Serial port parity setting
+/// Serial port parity configuration
 ///
-/// Defines the parity bit configuration for serial communication.
+/// Defines the parity bit setting for serial communication with GPS devices.
+/// Used when configuring serial port parameters for GPS receivers.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Parity {
     /// No parity bit
@@ -238,6 +239,10 @@ impl<'de> Deserialize<'de> for Parity {
     }
 }
 
+/// Status code for various sensor readings
+///
+/// Represents the status or alarm level for sensor readings,
+/// particularly used for magnetometer and other environmental sensors.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum StatusCode {
     /// magnetometer calibration alarm

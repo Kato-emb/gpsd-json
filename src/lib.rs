@@ -16,22 +16,23 @@
 //!
 //! ## Example
 //!
-//! ```no_run
+//! ```ignore
 //! use gpsd_json::client::{GpsdClient, StreamOptions};
+//! use futures::StreamExt;
 //!
-//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! // Connect to GPSD server
-//! let client = GpsdClient::connect_socket("127.0.0.1:2947")?;
+//! async fn example() -> Result<(), Box<dyn std::error::Error>> {
+//!     // Connect to GPSD server
+//!     let mut client = GpsdClient::connect("127.0.0.1:2947").await?;
 //!
-//! // Start streaming GPS data in JSON format
-//! let mut stream = client.stream(StreamOptions::json())?;
+//!     // Start streaming GPS data in JSON format
+//!     let mut stream = client.stream(StreamOptions::json()).await?;
 //!
-//! // Process incoming GPS data
-//! while let Some(Ok(msg)) = stream.next() {
-//!     println!("Received: {:?}", msg);
+//!     // Process incoming GPS data
+//!     while let Some(result) = stream.next().await {
+//!         println!("Received: {:?}", result?);
+//!     }
+//!     Ok(())
 //! }
-//! # Ok(())
-//! # }
 //! ```
 
 use crate::error::GpsdJsonError;

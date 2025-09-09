@@ -1,3 +1,9 @@
+//! Blocking (synchronous) GPSD client implementation
+//!
+//! This module provides a synchronous version of the GPSD client for
+//! applications that don't require asynchronous I/O. It offers the same
+//! functionality as the async client but with blocking operations.
+
 use std::io::BufRead;
 use std::net::{TcpStream, ToSocketAddrs};
 
@@ -6,6 +12,15 @@ use crate::error::GpsdJsonError;
 use crate::protocol::{GpsdJsonDecode, GpsdJsonEncode, v3};
 use crate::{Result, client::GpsdJsonProtocol};
 
+/// Core implementation of a blocking GPSD client
+///
+/// This struct provides the fundamental functionality for synchronous
+/// communication with a GPSD server. It handles protocol negotiation,
+/// message serialization/deserialization, and maintains the connection state.
+///
+/// # Type Parameters
+/// * `Stream` - The underlying I/O stream type (e.g., TcpStream)
+/// * `Proto` - The GPSD protocol version implementation
 #[derive(Debug)]
 pub struct GpsdClientCore<Stream, Proto> {
     reader: std::io::BufReader<Stream>,
@@ -17,6 +32,17 @@ impl<Stream, Proto> GpsdClientCore<Stream, Proto>
 where
     Proto: GpsdJsonProtocol,
 {
+    /// Opens a new GPSD client connection using the provided stream
+    ///
+    /// This method initializes the client with the given I/O stream and
+    /// performs protocol version negotiation with the GPSD server.
+    ///
+    /// # Arguments
+    /// * `stream` - The I/O stream for communication with GPSD
+    ///
+    /// # Returns
+    /// * `Ok(client)` - Successfully connected and negotiated protocol
+    /// * `Err(_)` - Connection or protocol negotiation failed
     pub fn open(stream: Stream) -> Result<Self>
     where
         Stream: std::io::Read + std::io::Write,
@@ -89,6 +115,23 @@ impl<Proto> GpsdClientCore<TcpStream, Proto>
 where
     Proto: GpsdJsonProtocol,
 {
+    /// Connects to a GPSD server over TCP
+    ///
+    /// Creates a TCP connection to the specified address and initializes
+    /// a GPSD client with protocol negotiation.
+    ///
+    /// # Arguments
+    /// * `addr` - Socket address of the GPSD server (e.g., "127.0.0.1:2947")
+    ///
+    /// # Returns
+    /// * `Ok(client)` - Successfully connected to GPSD
+    /// * `Err(_)` - Connection failed or protocol negotiation failed
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use gpsd_json::client::blocking::GpsdClient;
+    /// let client = GpsdClient::connect("127.0.0.1:2947").unwrap();
+    /// ```
     pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<Self> {
         let stream = TcpStream::connect(addr).map_err(GpsdJsonError::IoError)?;
         Self::open(stream)
