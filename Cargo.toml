@@ -27,8 +27,11 @@ serde_with = { version = "3" }
 chrono = { version = "0.4", features = ["serde"] }
 bitflags = { version = "2" }
 
-futures = { version = "0.3" }
-futures-util = { version = "0.3", features = ["io"] }
+futures-io = { version = "0.3", default-features = false, features = ["std"] }
+futures-util = { version = "0.3", default-features = false, features = [
+    "std",
+    "io",
+] }
 
 tokio = { version = "1", default-features = false, features = [
     "net",
@@ -39,6 +42,8 @@ tokio-util = { version = "0.7", default-features = false, features = [
 
 [dev-dependencies]
 clap = { version = "4.5.47", features = ["derive"] }
+
+futures = { version = "0.3" }
 tokio = { version = "1", default-features = false, features = [
     "net",
     "rt-multi-thread",
