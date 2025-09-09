@@ -3,6 +3,7 @@
 name = "gpsd-json"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/Kato-emb/gpsd-json"
 keywords = ["gpsd", "parser", "json", "protocol"]
 categories = ["API bindings", "Data structures"]
 license = "BSD-2-Clause"
