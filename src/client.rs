@@ -251,29 +251,27 @@ where
     /// # Returns
     /// * `Ok(client)` - Successfully connected and negotiated protocol
     /// * `Err(_)` - Connection or protocol negotiation failed
-    pub fn open(stream: Stream) -> impl std::future::Future<Output = Result<Self>>
+    pub async fn open(stream: Stream) -> Result<Self>
     where
         Stream: futures_io::AsyncRead + futures_io::AsyncWrite + Unpin,
     {
-        async move {
-            let reader = futures_util::io::BufReader::new(stream);
-            let mut client = GpsdClientCore {
-                reader,
-                buf: Vec::new(),
-                _proto: std::marker::PhantomData,
-            };
+        let reader = futures_util::io::BufReader::new(stream);
+        let mut client = GpsdClientCore {
+            reader,
+            buf: Vec::new(),
+            _proto: std::marker::PhantomData,
+        };
 
-            client.ensure_version().await?;
-            Ok(client)
-        }
+        client.ensure_version().await?;
+        Ok(client)
     }
 
     /// Sends a request message to the GPSD server asynchronously
-    fn send(&mut self, msg: &Proto::Request) -> impl std::future::Future<Output = Result<()>>
+    async fn send(&mut self, msg: &Proto::Request) -> Result<()>
     where
         Stream: futures_io::AsyncWrite + Unpin,
     {
-        async move { self.reader.write_request(msg).await }
+        self.reader.write_request(msg).await
     }
 
     /// Receives a response message from the GPSD server asynchronously
@@ -293,47 +291,45 @@ where
     /// Reads the version message from GPSD and verifies compatibility.
     /// The client requires the major version to match exactly and the
     /// minor version to be greater than or equal to the expected version.
-    fn ensure_version(&mut self) -> impl std::future::Future<Output = Result<()>>
+    async fn ensure_version(&mut self) -> Result<()>
     where
         Stream: futures_io::AsyncRead + Unpin,
     {
-        async move {
-            use futures_util::AsyncBufReadExt;
-            self.buf.clear();
-            let bytes_read = self
-                .reader
-                .read_until(b'\n', &mut self.buf)
-                .await
-                .map_err(GpsdJsonError::IoError)?;
+        use futures_util::AsyncBufReadExt;
+        self.buf.clear();
+        let bytes_read = self
+            .reader
+            .read_until(b'\n', &mut self.buf)
+            .await
+            .map_err(GpsdJsonError::IoError)?;
 
-            if bytes_read == 0 {
-                return Err(GpsdJsonError::ProtocolError(
-                    "Connection closed by GPSD before version message",
-                ));
-            }
-
-            let ret = if let Ok(Some(v3::ResponseMessage::Version(version))) =
-                serde_json::from_slice(&self.buf)
-            {
-                if Proto::API_VERSION_MAJOR != version.proto_major
-                    || Proto::API_VERSION_MINOR < version.proto_minor
-                {
-                    Err(GpsdJsonError::UnsupportedProtocolVersion((
-                        version.proto_major,
-                        version.proto_minor,
-                    )))
-                } else {
-                    Ok(())
-                }
-            } else {
-                Err(GpsdJsonError::ProtocolError(
-                    "Failed to read version message from GPSD",
-                ))
-            };
-
-            self.buf.clear();
-            ret
+        if bytes_read == 0 {
+            return Err(GpsdJsonError::ProtocolError(
+                "Connection closed by GPSD before version message",
+            ));
         }
+
+        let ret = if let Ok(Some(v3::ResponseMessage::Version(version))) =
+            serde_json::from_slice(&self.buf)
+        {
+            if Proto::API_VERSION_MAJOR != version.proto_major
+                || Proto::API_VERSION_MINOR < version.proto_minor
+            {
+                Err(GpsdJsonError::UnsupportedProtocolVersion((
+                    version.proto_major,
+                    version.proto_minor,
+                )))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(GpsdJsonError::ProtocolError(
+                "Failed to read version message from GPSD",
+            ))
+        };
+
+        self.buf.clear();
+        ret
     }
 }
 
